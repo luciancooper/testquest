@@ -19,7 +19,7 @@ const newPkg = Object.entries(pkg).filter(([key]) => pkgFields.includes(key)).re
     acc[key] = value;
     return acc;
 }, {
-    main: 'index.js',
+    scripts: { start: 'node index.js' },
 });
 
 const targetPath = join(import.meta.dirname, '../dist/package.json');
