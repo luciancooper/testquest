@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node dist/index.js",
-    "build": "tsup",
+    "build": "tsup && node scripts/prepare.js",
     "dev": "tsup --watch --onSuccess \"node dist/index.js\"",
     "lint": "eslint .",
     "check-types": "tsc --noEmit"

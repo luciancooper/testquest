@@ -32,8 +32,8 @@ jobs:
         run: pnpm build
 
       - name: generate deployment package
-        run: zip -r ../../app.zip dist package.json
-        working-directory: apps/server
+        run: zip -r ../../../app.zip .
+        working-directory: apps/server/dist
 
       - name: deploy to elastic beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
