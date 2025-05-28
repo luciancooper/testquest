@@ -1,0 +1,21 @@
+{
+  "name": "testquest",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "check-types": "turbo run check-types"
+  },
+  "commitlint": {
+    "extends": "@lcooper"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@lcooper/commitlint-config": "^2.0.0",
+    "husky": "^9.1.7",
+    "turbo": "^2.5.3"
+  },
+  "packageManager": "pnpm@10.11.0"
+}

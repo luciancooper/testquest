@@ -1,0 +1,47 @@
+name: Build & Deploy App
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/**']
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Deploy App
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: install dependencies
+        run: pnpm install
+
+      - name: build app
+        run: pnpm build
+
+      - name: generate deployment package
+        run: zip -r ../../app.zip dist package.json
+        working-directory: apps/server
+
+      - name: deploy to elastic beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: 'testquest'
+          environment_name: 'testquest-env'
+          version_label: ${{ github.sha }}
+          region: 'us-east-1'
+          deployment_package: 'app.zip'
