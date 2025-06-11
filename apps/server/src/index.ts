@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { join } from 'node:path';
+import { initialize } from './db';
 import apiRouter from './api';
 
 const app = express();
@@ -21,8 +22,16 @@ app.use('/api', apiRouter());
 // serve static files from frontend build
 app.use(express.static(join(import.meta.dirname, './public')));
 
+// server port
 const port = process.env['PORT'] ?? 3002;
 
-app.listen(port, () => {
-    console.log(`server running on port ${port}`);
-});
+// initialize database connection
+try {
+    await initialize();
+    console.log('✅ Connected to MySQL database');
+    app.listen(port, () => {
+        console.log(`server running on port ${port}`);
+    });
+} catch (err) {
+    console.error('❌ Database connection failed:', err);
+}

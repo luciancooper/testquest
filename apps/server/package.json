@@ -4,18 +4,20 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "dotenvx run -- node dist/index.js",
     "build": "tsup && node scripts/prepare.js",
-    "dev": "tsup --watch --onSuccess \"node dist/index.js\"",
+    "dev": "tsup --watch --onSuccess \"dotenvx run -- node dist/index.js\"",
     "lint": "eslint .",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "mysql2": "^3.14.1"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "^1.44.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/types": "workspace:*",
