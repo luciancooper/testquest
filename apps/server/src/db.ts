@@ -56,7 +56,6 @@ export async function initialize() {
         host: process.env[envKeys.host]!,
         user: process.env[envKeys.user]!,
         password: process.env[envKeys.password]!,
-        database: process.env[envKeys.db]!,
         port: parseInt(process.env[envKeys.port] ?? '3306', 10),
         connectTimeout: 10000, // 10 seconds
         waitForConnections: true,
@@ -73,6 +72,12 @@ export async function initialize() {
         // ping the database to ensure a connection can be established
         const connection = await _pool.getConnection();
         connection.release(); // release the connection immediately after successful ping
+        // use database specified by RDS_DATABASE env key
+        const db = process.env[envKeys.db]!;
+        // create database if it exists
+        await _pool.query('CREATE DATABASE IF NOT EXISTS ?', db);
+        // use database
+        await _pool.query('USE ?', db);
         // setup shutdown hooks if this is the first initialization
         if (!hooksRegistered) {
             const gracefulShutdown = async (signal: string) => {
