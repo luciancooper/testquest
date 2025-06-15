@@ -75,9 +75,9 @@ export async function initialize() {
         // use database specified by RDS_DATABASE env key
         const db = process.env[envKeys.db]!;
         // create database if it exists
-        await _pool.query('CREATE DATABASE IF NOT EXISTS ?', db);
+        await _pool.query(`CREATE DATABASE IF NOT EXISTS ${db}`);
         // use database
-        await _pool.query('USE ?', db);
+        await _pool.query(`USE ${db}`);
         // setup shutdown hooks if this is the first initialization
         if (!hooksRegistered) {
             const gracefulShutdown = async (signal: string) => {
