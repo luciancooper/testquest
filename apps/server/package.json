@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "dotenvx run -- node dist/index.js",
-    "build": "tsup && node scripts/prepare.js",
+    "build": "tsup",
     "dev": "tsup --watch --onSuccess \"dotenvx run -- node dist/index.js\"",
     "lint": "eslint .",
     "check-types": "tsc --noEmit"
@@ -25,6 +25,7 @@
     "@types/express": "^5.0.2",
     "@types/express-serve-static-core": "^5.0.6",
     "@types/morgan": "^1.9.9",
+    "@types/node": "^24.0.1",
     "eslint": "^9.27.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
