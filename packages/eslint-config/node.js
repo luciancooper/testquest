@@ -2,24 +2,23 @@ import config from '@lcooper/eslint-config-typescript';
 
 /**
  * @param {string} tsconfigRootDir
- * @param {string|string[]} project
  * @returns {import('eslint').Linter.Config}
  */
-export default function (tsconfigRootDir, project) {
+export default function (tsconfigRootDir) {
     return [
         { ignores: ['dist'] },
         ...config,
         {
             languageOptions: {
                 parserOptions: {
-                    project,
+                    project: './tsconfig.json',
                     tsconfigRootDir,
                 },
             },
             settings: {
                 'import/resolver': {
                     typescript: {
-                        project,
+                        project: './tsconfig.json',
                     },
                 },
             },

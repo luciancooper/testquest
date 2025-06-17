@@ -1,23 +1,25 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "module": "esnext",
-    "moduleResolution": "bundler",
+    // modules
+    "module": "nodenext",
+    "resolveJsonModule": true,
+    // language & environment
     "target": "es2022",
     "lib": ["ESNext"],
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "composite": false,
+    "moduleDetection": "force",
+    // emit (required for go-to-definition to work on compiled packages)
     "declaration": true,
     "declarationMap": true,
+    // js support
+    "allowJs": true,
+    // interop constraints
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "allowImportingTsExtensions": true,
-    "inlineSources": false,
     "isolatedModules": true,
-    "preserveWatchOutput": true,
+    // completeness
     "skipLibCheck": true,
-    "noEmit": true,
+    // linting
     "strict": true,
     "exactOptionalPropertyTypes": true,
     "noUnusedLocals": true,
@@ -26,6 +28,5 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true
-  },
-  "exclude": ["node_modules"]
+  }
 }

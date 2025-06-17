@@ -1,11 +1,13 @@
 {
   "extends": "./base.json",
   "compilerOptions": {
-    "target": "esnext",
     "module": "esnext",
-    "lib": ["ESNext", "DOM"],
+    "target": "esnext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    // bundler mode
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
-    "sourceMap": true
-  },
-  "exclude": ["node_modules"]
+    "noEmit": true
+  }
 }

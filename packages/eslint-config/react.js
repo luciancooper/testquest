@@ -3,12 +3,11 @@ import tsConfig from './node.js';
 
 /**
  * @param {string} tsconfigRootDir
- * @param {string|string[]} project
  * @returns {import('eslint').Linter.Config}
  */
-export default function (tsconfigRootDir, project) {
+export default function (tsconfigRootDir) {
     return [
-        ...tsConfig(tsconfigRootDir, project),
+        ...tsConfig(tsconfigRootDir),
         reactConfig,
     ];
 }

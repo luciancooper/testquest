@@ -1,0 +1,9 @@
+{
+  "extends": "./base.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator"]
+  }
+}
