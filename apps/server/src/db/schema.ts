@@ -14,8 +14,8 @@ interface INFORMATION_SCHEMA_ROW {
 }
 
 export async function getSchema(): Promise<SQLDatabaseSchema> {
-    const database = sequelize().getDatabaseName(),
-        [result] = (await sequelize().query(
+    const database = sequelize.getDatabaseName(),
+        [result] = (await sequelize.query(
             `SELECT
             TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION, COLUMN_DEFAULT, IS_NULLABLE, COLUMN_TYPE, COLUMN_KEY, EXTRA
             FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${database}' ORDER BY TABLE_NAME, ORDINAL_POSITION`,

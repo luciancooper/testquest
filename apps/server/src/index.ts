@@ -2,7 +2,7 @@ import express, { type Request, type Response } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { join } from 'node:path';
-import { initialize, defineModels } from './db';
+import { initialize } from './db';
 import apiRouter from './api';
 
 const app = express();
@@ -48,9 +48,7 @@ const port = process.env['PORT'] ?? 3002;
 // initialize database connection
 try {
     await initialize();
-    console.log('✅ Connected to MySQL database');
-    await defineModels();
-    console.log('✅ MySQL database models defined');
+    console.log('✅ SQL database connected');
     app.listen(port, () => {
         console.log(`server running on port ${port}`);
     });
