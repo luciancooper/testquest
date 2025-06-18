@@ -4,9 +4,7 @@
   "tasks": {
     "build": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "dependsOn": ["^build"]
-    },
-    "server#build": {
+      "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
     "site#build": {

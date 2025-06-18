@@ -1,5 +1,5 @@
 import type { SQLDatabaseSchema } from '@repo/types';
-import { sequelize } from './service';
+import { sequelize } from './models';
 
 interface INFORMATION_SCHEMA_ROW {
     TABLE_SCHEMA: string
