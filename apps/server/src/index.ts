@@ -1,8 +1,8 @@
-import express from 'express';
+import express, { type Request, type Response } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { join } from 'node:path';
-import { initialize } from './db';
+import { initialize, defineModels } from './db';
 import apiRouter from './api';
 
 const app = express();
@@ -22,6 +22,26 @@ app.use('/api', apiRouter());
 // serve static files from frontend build
 app.use(express.static(join(import.meta.dirname, './public')));
 
+// error 404
+app.use((req, res) => {
+    res.status(404).json({
+        code: 404,
+        message: 'Not Found',
+        endpoint: `${req.method} ${req.originalUrl}`,
+    });
+});
+
+// error 500
+app.use((err: { message?: string, code?: number } | null, req: Request, res: Response) => {
+    const code = err?.code ?? 500;
+    res.status(code).json({
+        code,
+        ...err,
+        message: err?.message ?? 'Internal Server Error',
+        endpoint: `${req.method} ${req.originalUrl}`,
+    });
+});
+
 // server port
 const port = process.env['PORT'] ?? 3002;
 
@@ -29,6 +49,8 @@ const port = process.env['PORT'] ?? 3002;
 try {
     await initialize();
     console.log('✅ Connected to MySQL database');
+    await defineModels();
+    console.log('✅ MySQL database models defined');
     app.listen(port, () => {
         console.log(`server running on port ${port}`);
     });

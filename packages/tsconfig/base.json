@@ -2,10 +2,11 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     // modules
-    "module": "nodenext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     // language & environment
-    "target": "es2022",
+    "target": "esnext",
     "lib": ["ESNext"],
     "moduleDetection": "force",
     // emit (required for go-to-definition to work on compiled packages)

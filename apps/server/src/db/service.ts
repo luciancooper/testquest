@@ -1,6 +1,7 @@
-import mysql, { type Pool, type PoolOptions } from 'mysql2/promise';
+import mysql from 'mysql2/promise';
+import { Sequelize } from 'sequelize';
 
-let _pool: Pool | null = null;
+let _sequelize: Sequelize | null = null;
 
 const envKeys = {
     host: 'RDS_HOSTNAME',
@@ -15,7 +16,7 @@ let initialized = false,
     hooksRegistered = false;
 
 export async function shutdown() {
-    if (!initialized || !_pool) {
+    if (!initialized || !_sequelize) {
         console.warn('Attempted to shut down uninitialized or already shut down database pool.');
         return;
     }
@@ -24,14 +25,14 @@ export async function shutdown() {
         return;
     }
     closing = true;
-    console.log('Initiating graceful database pool shutdown...');
+    console.log('Initiating graceful sequelize shutdown...');
     try {
-        await _pool.end();
+        await _sequelize.close();
         initialized = false;
-        _pool = null;
-        console.log('Database pool shut down successfully.');
+        _sequelize = null;
+        console.log('Sequelize shut down successfully.');
     } catch (error) {
-        console.error('Error during database pool shutdown:', error);
+        console.error('Error during Sequelize shutdown:', error);
         throw new Error(`Database shutdown failed: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
         closing = false;
@@ -51,33 +52,54 @@ export async function initialize() {
     if (missingKeys.length) {
         throw new Error(`Database initialization failed: ${missingKeys.join(', ')} must be set`);
     }
-    // resolve config
-    const config: PoolOptions = {
-        host: process.env[envKeys.host]!,
-        user: process.env[envKeys.user]!,
-        password: process.env[envKeys.password]!,
-        port: parseInt(process.env[envKeys.port] ?? '3306', 10),
-        connectTimeout: 10000, // 10 seconds
-        waitForConnections: true,
-        connectionLimit: 10,
-        queueLimit: 0,
-        maxIdle: 10,
-        idleTimeout: 60000,
-        enableKeepAlive: true,
-    };
+    // database credentials
+    const host = process.env[envKeys.host]!,
+        user = process.env[envKeys.user]!,
+        password = process.env[envKeys.password]!,
+        port = parseInt(process.env[envKeys.port] ?? '3306', 10),
+        database = process.env[envKeys.db]!;
     try {
-        // create connection pool
-        _pool = mysql.createPool(config);
+        // establish mysql connection to ensure db exists
+        const connection = await mysql.createConnection({
+            host,
+            user,
+            password,
+            port,
+            connectTimeout: 10000, // 10 seconds
+            enableKeepAlive: false,
+        });
+        // create database if it does not exist
+        await connection.query(`CREATE DATABASE IF NOT EXISTS ${database}`);
+        // close the connection
+        await connection.end();
+        console.log('DB %s created', database);
+        // create sequelize connection pool
+        _sequelize = new Sequelize({
+            host,
+            port,
+            database,
+            username: user,
+            password,
+            dialect: 'mysql',
+            pool: {
+                max: 10,
+                min: 0,
+                acquire: 30000,
+                idle: 10000,
+            },
+            logging: process.env['NODE_ENV'] === 'development' ? console.log : false,
+            dialectOptions: {
+                connectTimeout: 10000,
+            },
+            define: {
+                timestamps: true,
+                underscored: true,
+                freezeTableName: true,
+            },
+        });
+        await _sequelize.authenticate();
+        console.log('Sequelize connection established successfully.');
         initialized = true;
-        // ping the database to ensure a connection can be established
-        const connection = await _pool.getConnection();
-        connection.release(); // release the connection immediately after successful ping
-        // use database specified by RDS_DATABASE env key
-        const db = process.env[envKeys.db]!;
-        // create database if it exists
-        await _pool.query(`CREATE DATABASE IF NOT EXISTS ${db}`);
-        // use database
-        await _pool.query(`USE ${db}`);
         // setup shutdown hooks if this is the first initialization
         if (!hooksRegistered) {
             const gracefulShutdown = async (signal: string) => {
@@ -111,12 +133,12 @@ export async function initialize() {
     }
 }
 
-export function pool(): Pool {
-    if (!initialized || !_pool) {
+export function sequelize(): Sequelize {
+    if (!initialized || !_sequelize) {
         throw new Error('Database pool is not initialized');
     }
     if (closing) {
         throw new Error('Database shutdown is in progress, cannot execute queries');
     }
-    return _pool;
+    return _sequelize;
 }
